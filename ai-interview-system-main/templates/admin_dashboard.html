@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --panel:#121a2f;
+      --panel-soft:#18223b;
+      --line:rgba(148,163,184,.18);
+      --text:#ecf4ff;
+      --muted:#97a7c3;
+      --accent:#4cc9f0;
+      --accent-soft:rgba(76,201,240,.14);
+      --danger:#ef4444;
+      --ok:#22c55e;
+      --shadow:0 28px 70px rgba(0,0,0,.28);
+    }
+    *{box-sizing:border-box;}
+    body{margin:0;font-family:"Segoe UI",Tahoma,sans-serif;background:radial-gradient(circle at top, rgba(76,201,240,.08), transparent 20%),linear-gradient(180deg,#0a0f1d 0%,#0e1527 100%);color:var(--text);}
+    .layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh;}
+    .sidebar{padding:24px 18px;border-right:1px solid var(--line);background:rgba(8,12,24,.86);}
+    .brand{font-size:26px;font-weight:900;letter-spacing:-.03em;}
+    .brand span{color:var(--accent);}
+    .tag{margin-top:8px;color:var(--muted);font-size:13px;line-height:1.6;}
+    .nav{display:grid;gap:10px;margin-top:28px;}
+    .nav a{padding:12px 14px;border-radius:14px;text-decoration:none;color:var(--text);background:transparent;border:1px solid transparent;font-weight:700;}
+    .nav a.active,.nav a:hover{background:var(--accent-soft);border-color:rgba(76,201,240,.18);}
+    .logout{margin-top:18px;background:rgba(239,68,68,.12)!important;border-color:rgba(239,68,68,.2)!important;}
+    .main{padding:28px 24px;}
+    .hero{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap;}
+    h1{margin:0;font-size:36px;letter-spacing:-.04em;}
+    .sub{margin-top:8px;color:var(--muted);max-width:640px;line-height:1.7;}
+    .err,.ok{margin-top:16px;padding:12px 14px;border-radius:14px;border:1px solid;}
+    .err{background:rgba(239,68,68,.12);color:#fecaca;border-color:rgba(239,68,68,.18);}
+    .ok{background:rgba(34,197,94,.12);color:#bbf7d0;border-color:rgba(34,197,94,.18);}
+    .stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-top:24px;}
+    .card,.section{background:linear-gradient(180deg,rgba(18,26,47,.96),rgba(15,22,39,.96));border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);}
+    .card{padding:18px;}
+    .label{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+    .value{margin-top:10px;font-size:36px;font-weight:900;}
+    .delta{margin-top:10px;color:var(--muted);font-size:13px;}
+    .section{padding:18px;margin-top:18px;}
+    .sectionHead{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
+    .section h2{margin:0;font-size:22px;}
+    .chips{display:flex;gap:10px;flex-wrap:wrap;}
+    .chip{padding:10px 12px;border-radius:999px;background:rgba(76,201,240,.12);color:#b8efff;font-weight:800;font-size:13px;}
+    table{width:100%;border-collapse:collapse;}
+    th,td{padding:12px 10px;border-bottom:1px solid rgba(148,163,184,.1);text-align:left;font-size:14px;vertical-align:top;}
+    th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+    .btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 12px;border-radius:12px;background:#1f6feb;color:#fff;text-decoration:none;font-weight:800;}
+    .bars{display:grid;gap:10px;margin-top:8px;}
+    .barRow{display:grid;grid-template-columns:180px 1fr 56px;gap:10px;align-items:center;}
+    .barRow span{font-size:14px;color:#d8e7ff;}
+    .barTrack{height:10px;border-radius:999px;background:rgba(148,163,184,.14);overflow:hidden;}
+    .barFill{height:100%;border-radius:999px;background:linear-gradient(90deg,#4cc9f0,#7dd3fc);}
+    @media (max-width:1100px){.stats{grid-template-columns:repeat(2,minmax(0,1fr));}.layout{grid-template-columns:1fr;}.sidebar{border-right:none;border-bottom:1px solid var(--line);}}
+    @media (max-width:680px){.stats{grid-template-columns:1fr;}.barRow{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">Agno<span>Hire</span></div>
+      <div class="tag">Enterprise console for candidate reports, analytics, and admin-only interview operations.</div>
+      <nav class="nav">
+        <a class="active" href="/admin">Dashboard</a>
+        <a href="/admin/users">Users</a>
+        <a href="/admin/voice-users">Voice Users</a>
+        <a href="/admin/results">Results</a>
+        <a href="/admin/reports">Reports</a>
+        <a href="/admin/email">Personalized Email</a>
+        <a class="logout" href="/admin/logout">Logout</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="hero">
+        <div>
+          <h1>Admin Overview</h1>
+          <div class="sub">A clean control room for interview operations, candidate monitoring, and performance analytics.</div>
+        </div>
+        <form method="post" action="/admin/reset-data" onsubmit="return confirm('Are you sure you want to delete all candidate interview data?');">
+          <button class="btn" style="background:#b91c1c;border:none;cursor:pointer;">Reset Candidate Data</button>
+        </form>
+      </div>
+
+      {% if error %}
+      <div class="err">{{ error }}</div>
+      {% endif %}
+      {% if notice %}
+      <div class="ok">{{ notice }}</div>
+      {% endif %}
+
+      <section class="stats">
+        <div class="card"><div class="label">Total Users</div><div class="value">{{ analytics.total_users or 0 }}</div><div class="delta">Candidate accounts stored</div></div>
+        <div class="card"><div class="label">Total Interviews</div><div class="value">{{ analytics.total_interviews or 0 }}</div><div class="delta">All recorded sessions</div></div>
+        <div class="card"><div class="label">Average Score</div><div class="value">{{ analytics.average_scores.overall if analytics.average_scores else 0 }}</div><div class="delta">Across completed reports</div></div>
+        <div class="card"><div class="label">Active Sessions</div><div class="value">{{ analytics.active_sessions or 0 }}</div><div class="delta">Currently pending interviews</div></div>
+        <div class="card"><div class="label">Completed</div><div class="value">{{ analytics.completed_interviews or 0 }}</div><div class="delta">Finished interview sessions</div></div>
+      </section>
+
+      <section class="section">
+        <div class="sectionHead">
+          <h2>Score Summary</h2>
+          <a class="btn" href="/admin/reports">Open Reports</a>
+        </div>
+        <div class="chips">
+          <div class="chip">Communication: {{ analytics.average_scores.communication if analytics.average_scores else 0 }}</div>
+          <div class="chip">Confidence: {{ analytics.average_scores.confidence if analytics.average_scores else 0 }}</div>
+          <div class="chip">Technical: {{ analytics.average_scores.technical if analytics.average_scores else 0 }}</div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="sectionHead">
+          <h2>Weak Areas Analysis</h2>
+          <a class="btn" href="/admin/users">Manage Users</a>
+        </div>
+        <div class="bars">
+          {% for item in analytics.weak_areas or [] %}
+          <div class="barRow">
+            <span>{{ item.label }}</span>
+            <div class="barTrack"><div class="barFill" style="width: {{ [item.count * 12, 100]|min }}%;"></div></div>
+            <span>{{ item.count }}</span>
+          </div>
+          {% else %}
+          <div class="sub">No weak-area data available yet.</div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="sectionHead">
+          <h2>Recent Candidate Sessions</h2>
+          <a class="btn" href="/admin/results">View All Results</a>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in sessions %}
+            <tr>
+              <td>{{ item.candidate_name }}</td>
+              <td>{{ item.candidate_email or "-" }}</td>
+              <td>{{ item.status }}</td>
+              <td>{{ item.created_at }}</td>
+              <td><a class="btn" href="/admin/users/{{ item.session_id }}">Open</a></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="sub">No candidate sessions available.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

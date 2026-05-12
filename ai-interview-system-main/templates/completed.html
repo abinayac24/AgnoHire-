@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interview Completed</title>
+  <style>
+    :root{
+      --bg1:#0b1220;
+      --bg2:#12305f;
+      --accent:#2dd4bf;
+      --ink:#0f172a;
+      --muted:#475569;
+      --panel:#ffffff;
+    }
+    *{box-sizing:border-box;}
+    body{
+      margin:0;
+      font-family:"Segoe UI",Tahoma,sans-serif;
+      min-height:100vh;
+      color:#fff;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(45,212,191,.24), transparent 26%),
+        radial-gradient(circle at 80% 8%, rgba(59,130,246,.20), transparent 22%),
+        linear-gradient(135deg,var(--bg1),var(--bg2));
+      display:grid;
+      place-items:center;
+      padding:20px;
+    }
+    .card{
+      width:min(760px,100%);
+      background:var(--panel);
+      color:var(--ink);
+      border-radius:18px;
+      padding:34px 28px;
+      box-shadow:0 24px 60px rgba(0,0,0,.32);
+      text-align:center;
+    }
+    .label{
+      display:inline-block;
+      padding:6px 12px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:700;
+      color:#0f766e;
+      background:rgba(45,212,191,.16);
+      border:1px solid rgba(45,212,191,.42);
+    }
+    h1{
+      margin:14px 0 8px;
+      font-size:36px;
+    }
+    p{
+      margin:8px 0;
+      font-size:18px;
+      line-height:1.55;
+      color:var(--muted);
+    }
+    .loader{
+      margin:20px auto 0;
+      width:42px;
+      height:42px;
+      border-radius:50%;
+      border:4px solid #dbeafe;
+      border-top-color:var(--accent);
+      animation:spin 1s linear infinite;
+    }
+    .actions{
+      margin-top:20px;
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      flex-wrap:wrap;
+    }
+    .btn{
+      display:inline-block;
+      text-decoration:none;
+      color:#fff;
+      font-weight:700;
+      border-radius:10px;
+      padding:11px 16px;
+      background:#1d4ed8;
+    }
+    .btn.secondary{ background:#334155; }
+    @keyframes spin{to{transform:rotate(360deg);}}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <span class="label">Interview Status</span>
+    <h1>{{ completion_title or "Interview Completed" }}</h1>
+    <p>Thank you for attending the interview, {{ candidate_name }}.</p>
+    <p>{{ completion_subtext or "Your results and feedback will be sent to your email within 5 minutes." }}</p>
+    <p><strong>Reason:</strong> {{ termination_reason or "Interview completed successfully" }}</p>
+    <div class="loader" aria-hidden="true"></div>
+    <div class="actions">
+      <a class="btn" href="/">Back to Home</a>
+    </div>
+  </div>
+</body>
+</html>

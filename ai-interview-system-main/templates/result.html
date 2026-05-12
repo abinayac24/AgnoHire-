@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Result</title>
+
+    <style>
+        :root{
+            --ink:#09111f;
+            --blue:#2563eb;
+            --teal:#0f766e;
+            --green:#16a34a;
+            --red:#dc2626;
+            --mist:#f8fbff;
+            --line:#dbe3ef;
+            --muted:#64748b;
+            --text:#1f2937;
+        }
+
+        *{box-sizing:border-box;}
+
+        body{
+            margin:0;
+            font-family:"Segoe UI",Tahoma,sans-serif;
+            color:white;
+            background:
+                radial-gradient(circle at 12% 12%, rgba(20,184,166,.16), transparent 18%),
+                radial-gradient(circle at 82% 10%, rgba(37,99,235,.18), transparent 17%),
+                linear-gradient(145deg,#08101d 0%, #10213f 42%, #183f7a 100%);
+            min-height:100vh;
+        }
+
+        .shell{
+            max-width:1080px;
+            margin:0 auto;
+            padding:40px 18px 56px;
+        }
+
+        .hero{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:22px;
+        }
+
+        .panel{
+            border-radius:28px;
+            background:#ffffff;
+            color:var(--text);
+            padding:28px;
+            box-shadow:0 24px 60px rgba(0,0,0,.22);
+        }
+
+        .heroPanel{
+            background:rgba(255,255,255,.08);
+            color:white;
+            border:1px solid rgba(255,255,255,.14);
+            backdrop-filter:blur(12px);
+        }
+
+        .eyebrow{
+            margin:0;
+            font-size:12px;
+            text-transform:uppercase;
+            letter-spacing:.26em;
+            color:#c7f9f1;
+            font-weight:700;
+        }
+
+        .title{
+            margin:14px 0 0;
+            font-size:40px;
+            font-weight:800;
+        }
+
+        .heroPanel p{
+            line-height:1.8;
+            color:#d8e6ff;
+        }
+
+        .scoreCard{
+            display:grid;
+            grid-template-columns:1fr auto;
+            gap:18px;
+            align-items:center;
+        }
+
+        .scoreValue{
+            font-size:56px;
+            font-weight:900;
+            color:var(--ink);
+            margin:8px 0 0;
+        }
+
+        .statusBadge{
+            padding:12px 18px;
+            border-radius:999px;
+            color:white;
+            font-size:16px;
+            font-weight:800;
+            text-transform:uppercase;
+        }
+
+        .pass{background:linear-gradient(135deg,#16a34a,#22c55e);}
+        .fail{background:linear-gradient(135deg,#dc2626,#ef4444);}
+
+        .meta{
+            margin-top:16px;
+            display:grid;
+            grid-template-columns:repeat(2,minmax(0,1fr));
+            gap:12px;
+        }
+
+        .metaCard{
+            background:var(--mist);
+            border:1px solid var(--line);
+            border-radius:18px;
+            padding:14px;
+        }
+
+        .metaLabel{
+            font-size:12px;
+            font-weight:800;
+            text-transform:uppercase;
+            letter-spacing:.16em;
+            color:var(--muted);
+        }
+
+        .metaValue{
+            margin-top:8px;
+            font-size:18px;
+            font-weight:800;
+            color:var(--ink);
+        }
+
+        .summaryBox{
+            margin-top:24px;
+            text-align:left;
+            background:var(--mist);
+            border:1px solid var(--line);
+            border-radius:20px;
+            padding:20px;
+        }
+
+        .summaryBox h3{
+            margin:0 0 12px;
+            font-size:22px;
+        }
+
+        .summaryBox p{
+            margin:10px 0;
+            line-height:1.7;
+        }
+
+        .questionScores{
+            margin-top:18px;
+            display:grid;
+            gap:10px;
+        }
+
+        .questionScoreRow{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:12px;
+            padding:12px 14px;
+            background:var(--mist);
+            border:1px solid var(--line);
+            border-radius:14px;
+            font-weight:700;
+        }
+
+        .feedbackWrap{
+            margin-top:22px;
+        }
+
+        .feedbackTitle{
+            margin:0 0 14px;
+            font-size:28px;
+            font-weight:800;
+            color:white;
+        }
+
+        .feedbackList{
+            display:grid;
+            gap:14px;
+        }
+
+        .feedbackItem{
+            background:#ffffff;
+            color:var(--text);
+            border-radius:20px;
+            padding:18px;
+            box-shadow:0 24px 60px rgba(0,0,0,.18);
+            line-height:1.7;
+        }
+
+        .actions{
+            display:flex;
+            gap:12px;
+            flex-wrap:wrap;
+            margin-top:24px;
+        }
+
+        .btn{
+            display:inline-block;
+            text-decoration:none;
+            padding:12px 18px;
+            border-radius:14px;
+            font-size:14px;
+            font-weight:800;
+        }
+
+        .btnPrimary{
+            background:linear-gradient(135deg,#2563eb,#1d4ed8);
+            color:white;
+        }
+
+        .btnGhost{
+            background:rgba(255,255,255,.12);
+            color:white;
+            border:1px solid rgba(255,255,255,.18);
+        }
+
+        @media (max-width: 900px){
+            .hero{grid-template-columns:1fr;}
+            .scoreCard{grid-template-columns:1fr;}
+            .title{font-size:34px;}
+            .meta{grid-template-columns:1fr;}
+        }
+    </style>
+
+</head>
+
+<body>
+
+<div class="shell">
+
+    <div class="hero">
+        <div class="panel heroPanel">
+            <p class="eyebrow">Interview Completed</p>
+            <h1 class="title">Your AI interview has been evaluated successfully.</h1>
+            <p>
+                Review the final score, recruiter summary, and detailed AI feedback below.
+                Your PDF report is also prepared for recruiter-style review.
+            </p>
+
+            {% if email %}
+            <p><strong>Email Delivery:</strong> Result email will be sent to {{ email }} after 5 minutes.</p>
+            {% endif %}
+
+            <div class="actions">
+                <a class="btn btnPrimary" href="/">Back to Home</a>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="scoreCard">
+                <div>
+                    <div class="metaLabel">Total Score</div>
+                    <div class="scoreValue">{{ total_score }} / 50</div>
+                </div>
+                {% if result == "Pass" %}
+                <div class="statusBadge pass">Pass</div>
+                {% else %}
+                <div class="statusBadge fail">Fail</div>
+                {% endif %}
+            </div>
+
+            <div class="meta">
+                <div class="metaCard">
+                    <div class="metaLabel">Total Questions</div>
+                    <div class="metaValue">{{ total }}</div>
+                </div>
+                <div class="metaCard">
+                    <div class="metaLabel">Report Mode</div>
+                    <div class="metaValue">AI Evaluated</div>
+                </div>
+                <div class="metaCard">
+                    <div class="metaLabel">Performance</div>
+                    <div class="metaValue">{{ performance_label }}</div>
+                </div>
+                <div class="metaCard">
+                    <div class="metaLabel">Percentage</div>
+                    <div class="metaValue">{{ percentage }}%</div>
+                </div>
+            </div>
+
+            <div class="summaryBox">
+                <h3>AI Recruiter Summary</h3>
+                <p><strong>Communication Level:</strong> {{ recruiter_summary.communication_level }}</p>
+                <p><strong>Technical Confidence:</strong> {{ recruiter_summary.technical_confidence }}</p>
+                <p><strong>Strengths:</strong> {{ recruiter_summary.strengths }}</p>
+                <p><strong>Weaknesses:</strong> {{ recruiter_summary.weaknesses }}</p>
+                <p><strong>Hiring Recommendation:</strong> {{ recruiter_summary.hiring_recommendation }}</p>
+            </div>
+
+            <div class="summaryBox">
+                <h3>Question-wise Scores</h3>
+                <div class="questionScores">
+                    {% for item in question_scores %}
+                    <div class="questionScoreRow">
+                        <span>Q{{ item.question_number }}</span>
+                        <span>{{ item.score }}/{{ item.max_score }}</span>
+                    </div>
+                    {% else %}
+                    <p>No question-wise scores available.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="feedbackWrap">
+        <h2 class="feedbackTitle">Detailed AI Feedback</h2>
+        <div class="feedbackList">
+            {% for f in feedback %}
+            <div class="feedbackItem">
+                <strong>Question {{ loop.index }}</strong><br>
+                {{ f }}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

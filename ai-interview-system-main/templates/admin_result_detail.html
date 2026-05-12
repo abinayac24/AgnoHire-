@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Candidate Result Detail</title>
+  <style>
+    body{font-family:"Segoe UI",Tahoma,sans-serif;margin:0;background:#f1f5f9;color:#0f172a;}
+    .wrap{max-width:1100px;margin:0 auto;padding:24px 16px;}
+    .card{background:#fff;border:1px solid #dbe3ef;border-radius:14px;padding:16px;margin-bottom:12px;}
+    h1,h2{margin:0 0 12px;}
+    .muted{color:#64748b;}
+    .err{padding:10px;border-radius:10px;background:#fee2e2;color:#991b1b;margin-bottom:10px;}
+    .ok{padding:10px;border-radius:10px;background:#dcfce7;color:#166534;margin-bottom:10px;}
+    .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}
+    .box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px;}
+    ul{margin:8px 0 0 18px;}
+    .q{padding:10px;border:1px solid #e2e8f0;border-radius:10px;background:#fff;margin-top:10px;}
+    .top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;}
+    a.btn,button.btn{display:inline-block;padding:9px 12px;border:none;border-radius:10px;background:#1d4ed8;color:#fff;text-decoration:none;font-weight:700;cursor:pointer;}
+    .danger{background:#b91c1c;}
+    form.inline{display:inline;}
+    .badge{display:inline-flex;align-items:center;justify-content:center;min-width:80px;padding:8px 12px;border-radius:999px;font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#fff;}
+    .pass{background:green;}
+    .fail{background:red;}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="nav">
+      <a href="/admin">Dashboard</a>
+      <a href="/admin/users">Users</a>
+      <a href="/admin/voice-users">Voice Users</a>
+      <a href="/admin/results">Results</a>
+      <a href="/admin/reports">Reports</a>
+      <a href="/admin/email">Personalized Email</a>
+      <a href="/admin/logout">Logout</a>
+    </nav>
+    <div class="top">
+      <h1>Candidate Result Detail</h1>
+      <div class="top">
+        <a class="btn" href="/admin/results">Back to Results</a>
+        {% if record %}
+        <form class="inline" method="post" action="/admin/result/{{ record.get('session_id', '') }}/delete" onsubmit="return confirm('Delete this candidate data permanently?');">
+          <button class="btn danger" type="submit">Delete Candidate Data</button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if error %}
+    <div class="err">{{ error }}</div>
+    {% endif %}
+    {% if notice %}
+    <div class="ok">{{ notice }}</div>
+    {% endif %}
+
+    {% if record %}
+    <div class="card">
+      <h2>{{ record.get("candidate_name", "Candidate") }}</h2>
+      <p class="muted">Email: {{ record.get("candidate_email", "-") or "-" }}</p>
+      <p class="muted">Session: {{ record.get("session_id", "-") }}</p>
+      <p class="muted">Timestamp: {{ record.get("timestamp", "-") }}</p>
+      <p class="muted">Interview Status: {{ record.get("status", "-") }}</p>
+      <p class="muted">Termination: {{ record.get("termination_reason", "-") or "-" }}</p>
+      <div class="grid">
+        <div class="box"><strong>Total Score</strong><div>{{ record.get("total_score", 0) }} / 50</div></div>
+        <div class="box"><strong>Result</strong><div><span class="badge {{ 'pass' if record.get('result_status') == 'PASS' else 'fail' }}">{{ record.get("result_status", "FAIL") }}</span></div></div>
+        <div class="box"><strong>Performance</strong><div>{{ record.get("performance_label", "Needs Improvement") }}</div></div>
+        <div class="box"><strong>Technical</strong><div>{{ record.get("scores", {}).get("technical", "-") }}</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Strengths</h2>
+      <ul>
+        {% for item in record.get("strengths", []) %}<li>{{ item }}</li>{% else %}<li class="muted">No strengths recorded.</li>{% endfor %}
+      </ul>
+      <h2 style="margin-top:14px;">Weaknesses</h2>
+      <ul>
+        {% for item in record.get("weaknesses", []) %}<li>{{ item }}</li>{% else %}<li class="muted">No weaknesses recorded.</li>{% endfor %}
+      </ul>
+      <h2 style="margin-top:14px;">Alerts</h2>
+      <ul>
+        {% for item in record.get("alerts", []) %}<li>{{ item }}</li>{% else %}<li class="muted">No alerts recorded.</li>{% endfor %}
+      </ul>
+      <h2 style="margin-top:14px;">Final Feedback</h2>
+      <p>{{ record.get("final_feedback", "-") }}</p>
+    </div>
+
+    {% set ai_feedback = record.get("ai_feedback_report", {}) %}
+    {% if ai_feedback %}
+    <div class="card">
+      <h2>AI Feedback Report</h2>
+      <div class="grid">
+        <div class="box">
+          <strong>Communication</strong>
+          <div>{{ ai_feedback.get("communication", {}).get("score", "-") }} / 10</div>
+          <p class="muted">{{ ai_feedback.get("communication", {}).get("summary", "-") }}</p>
+        </div>
+        <div class="box">
+          <strong>Confidence</strong>
+          <div>{{ ai_feedback.get("confidence", {}).get("score", "-") }} / 10</div>
+          <p class="muted">{{ ai_feedback.get("confidence", {}).get("summary", "-") }}</p>
+        </div>
+        <div class="box">
+          <strong>Technical Quality</strong>
+          <div>{{ ai_feedback.get("technical_answer_quality", {}).get("score", "-") }} / 10</div>
+          <p class="muted">{{ ai_feedback.get("technical_answer_quality", {}).get("summary", "-") }}</p>
+        </div>
+        <div class="box">
+          <strong>Fluency</strong>
+          <div>{{ ai_feedback.get("communication", {}).get("fluency", "-") }}</div>
+          <p class="muted">Fillers: {{ ai_feedback.get("communication", {}).get("filler_word_count", 0) }}</p>
+        </div>
+      </div>
+      <h2 style="margin-top:14px;">Improvement Suggestions</h2>
+      <ul>
+        {% for item in ai_feedback.get("improvement_suggestions", []) %}<li>{{ item }}</li>{% else %}<li class="muted">No AI suggestions recorded.</li>{% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    <div class="card">
+      <h2>Question Scores</h2>
+      {% for item in record.get("items", []) %}
+      <div class="q">
+        <div><strong>Q{{ item.get("question_number", loop.index) }}:</strong> {{ item.get("question", "-") }}</div>
+        <div><strong>A:</strong> {{ item.get("answer", "-") }}</div>
+        <div class="muted">Score: {{ item.get("score", 0) }}/{{ item.get("max_score", 10) }}</div>
+        <div class="muted">Feedback: {{ item.get("feedback", "-") }}</div>
+      </div>
+      {% else %}
+      <p class="muted">No answer detail available.</p>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Personalized Email | AgnoHire</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --panel:#121a2f;
+      --panel-soft:#18223b;
+      --line:rgba(148,163,184,.18);
+      --text:#ecf4ff;
+      --muted:#97a7c3;
+      --accent:#4cc9f0;
+      --accent-soft:rgba(76,201,240,.14);
+      --danger:#ef4444;
+      --ok:#22c55e;
+      --warning:#f59e0b;
+      --shadow:0 28px 70px rgba(0,0,0,.28);
+    }
+    *{box-sizing:border-box;}
+    body{margin:0;font-family:"Segoe UI",Tahoma,sans-serif;background:radial-gradient(circle at top, rgba(76,201,240,.08), transparent 20%),linear-gradient(180deg,#0a0f1d 0%,#0e1527 100%);color:var(--text);}
+    .layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh;}
+    .sidebar{padding:24px 18px;border-right:1px solid var(--line);background:rgba(8,12,24,.86);}
+    .brand{font-size:26px;font-weight:900;letter-spacing:-.03em;}
+    .brand span{color:var(--accent);}
+    .tag{margin-top:8px;color:var(--muted);font-size:13px;line-height:1.6;}
+    .nav{display:grid;gap:10px;margin-top:28px;}
+    .nav a{padding:12px 14px;border-radius:14px;text-decoration:none;color:var(--text);background:transparent;border:1px solid transparent;font-weight:700;}
+    .nav a.active,.nav a:hover{background:var(--accent-soft);border-color:rgba(76,201,240,.18);}
+    .logout{margin-top:18px;background:rgba(239,68,68,.12)!important;border-color:rgba(239,68,68,.2)!important;}
+    .main{padding:28px 24px;max-width:1400px;}
+    h1{margin:0;font-size:32px;letter-spacing:-.04em;}
+    .sub{margin-top:8px;color:var(--muted);max-width:640px;line-height:1.7;}
+    .err,.ok,.warn{margin-top:16px;padding:12px 14px;border-radius:14px;border:1px solid;}
+    .err{background:rgba(239,68,68,.12);color:#fecaca;border-color:rgba(239,68,68,.18);}
+    .ok{background:rgba(34,197,94,.12);color:#bbf7d0;border-color:rgba(34,197,94,.18);}
+    .warn{background:rgba(245,158,11,.12);color:#fde68a;border-color:rgba(245,158,11,.18);}
+
+    .grid{display:grid;grid-template-columns:1fr 400px;gap:24px;margin-top:24px;}
+    @media (max-width:1100px){.grid{grid-template-columns:1fr;}}
+
+    .card,.section{background:linear-gradient(180deg,rgba(18,26,47,.96),rgba(15,22,39,.96));border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:24px;}
+    .section h2{margin:0 0 18px;font-size:20px;}
+    .section h3{margin:0 0 12px;font-size:16px;color:var(--muted);}
+
+    .form-group{margin-bottom:18px;}
+    label{display:block;margin-bottom:8px;font-size:14px;font-weight:600;color:var(--text);}
+    input[type="text"],input[type="email"],textarea,select{
+      width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--panel-soft);color:var(--text);font-size:14px;font-family:inherit;
+    }
+    input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent);}
+    textarea{min-height:200px;resize:vertical;}
+    .help-text{font-size:12px;color:var(--muted);margin-top:6px;}
+
+    .btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 18px;border-radius:12px;background:#1f6feb;color:#fff;text-decoration:none;font-weight:700;border:none;cursor:pointer;font-size:14px;}
+    .btn:hover{background:#2563eb;}
+    .btn:disabled{opacity:.6;cursor:not-allowed;}
+    .btn-secondary{background:var(--panel-soft);border:1px solid var(--line);}
+    .btn-secondary:hover{background:rgba(76,201,240,.1);}
+    .btn-success{background:var(--ok);color:#064e3b;}
+    .btn-danger{background:var(--danger);}
+
+    .actions{display:flex;gap:12px;margin-top:20px;}
+
+    .history-item{padding:14px;border-radius:12px;background:var(--panel-soft);margin-bottom:12px;border:1px solid var(--line);}
+    .history-item:hover{border-color:rgba(76,201,240,.3);}
+    .history-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
+    .history-to{font-weight:600;font-size:14px;}
+    .history-time{font-size:12px;color:var(--muted);}
+    .history-subject{font-size:13px;color:var(--muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .history-status{display:inline-block;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;}
+    .status-success{background:rgba(34,197,94,.2);color:#4ade80;}
+    .status-failed{background:rgba(239,68,68,.2);color:#f87171;}
+    .status-pending{background:rgba(245,158,11,.2);color:#fbbf24;}
+
+    .badge{display:inline-block;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700;background:var(--accent-soft);color:var(--accent);}
+    .divider{height:1px;background:var(--line);margin:20px 0;}
+
+    .preview-box{background:var(--panel);padding:16px;border-radius:12px;border:1px solid var(--line);font-size:13px;line-height:1.6;white-space:pre-wrap;max-height:300px;overflow-y:auto;}
+
+    .tabs{display:flex;gap:8px;margin-bottom:20px;border-bottom:1px solid var(--line);padding-bottom:12px;}
+    .tab{padding:10px 16px;border-radius:10px;background:transparent;border:1px solid transparent;cursor:pointer;color:var(--muted);font-weight:600;}
+    .tab.active{background:var(--accent-soft);color:var(--accent);border-color:rgba(76,201,240,.3);}
+    .tab:hover{color:var(--text);}
+
+    .empty-state{text-align:center;padding:40px 20px;color:var(--muted);}
+    .empty-state svg{width:48px;height:48px;margin-bottom:16px;opacity:.5;}
+
+    @media (max-width:1100px){.layout{grid-template-columns:1fr;}.sidebar{border-right:none;border-bottom:1px solid var(--line);}}
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">Agno<span>Hire</span></div>
+      <div class="tag">Enterprise console for candidate reports, analytics, and admin-only interview operations.</div>
+      <nav class="nav">
+        <a href="/admin">Dashboard</a>
+        <a href="/admin/users">Users</a>
+        <a href="/admin/voice-users">Voice Users</a>
+        <a href="/admin/results">Results</a>
+        <a href="/admin/reports">Reports</a>
+        <a class="active" href="/admin/email">Personalized Email</a>
+        <a class="logout" href="/admin/logout">Logout</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <h1>Personalized Email Sender</h1>
+      <div class="sub">Send custom, manual emails to candidates. This is separate from the automated email templates used for interview results.</div>
+
+      {% if error %}
+      <div class="err">{{ error }}</div>
+      {% endif %}
+      {% if success %}
+      <div class="ok">{{ success }}</div>
+      {% endif %}
+      {% if warning %}
+      <div class="warn">{{ warning }}</div>
+      {% endif %}
+
+      <div class="grid">
+        <div class="section">
+          <h2>Compose Email</h2>
+
+          <form id="emailForm" method="post" action="/admin/email/send">
+            <div class="form-group">
+              <label for="recipients">Recipient Email(s)</label>
+              <input type="text" id="recipients" name="recipients" placeholder="candidate@example.com, another@example.com" required>
+              <div class="help-text">Enter one or more email addresses separated by commas</div>
+            </div>
+
+            <div class="form-group">
+              <label for="subject">Subject</label>
+              <input type="text" id="subject" name="subject" placeholder="Enter email subject" required>
+            </div>
+
+            <div class="form-group">
+              <label for="message">Message Body</label>
+              <textarea id="message" name="message" placeholder="Enter your personalized message here..." required></textarea>
+              <div class="help-text">You can use {{ '{{' }} name {{ '}}' }}, {{ '{{' }} email {{ '}}' }}, {{ '{{' }} session_id {{ '}}' }} as placeholders</div>
+            </div>
+
+            <div class="actions">
+              <button type="submit" class="btn btn-success">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px;">
+                  <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                </svg>
+                Send Email
+              </button>
+              <button type="button" class="btn btn-secondary" onclick="previewEmail()">Preview</button>
+              <button type="reset" class="btn btn-secondary">Clear</button>
+            </div>
+          </form>
+
+          <div class="divider"></div>
+
+          <h3>Preview</h3>
+          <div id="previewBox" class="preview-box" style="display:none;"></div>
+        </div>
+
+        <div class="section">
+          <h2>Email History</h2>
+          <div style="max-height:600px;overflow-y:auto;">
+            {% if email_history %}
+              {% for email in email_history %}
+              <div class="history-item">
+                <div class="history-header">
+                  <div>
+                    <span class="history-to">{{ email.recipients }}</span>
+                    <span class="history-status status-{{ email.status }}">{{ email.status }}</span>
+                  </div>
+                  <span class="history-time">{{ email.sent_at }}</span>
+                </div>
+                <div class="history-subject">{{ email.subject }}</div>
+                <div style="margin-top:8px;font-size:12px;color:var(--muted);">
+                  Sent by: {{ email.sent_by }}
+                </div>
+                {% if email.error_message %}
+                <div style="margin-top:8px;font-size:12px;color:var(--danger);">
+                  Error: {{ email.error_message }}
+                </div>
+                {% endif %}
+              </div>
+              {% endfor %}
+            {% else %}
+              <div class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+                <div>No emails sent yet</div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function previewEmail() {
+      const recipients = document.getElementById('recipients').value;
+      const subject = document.getElementById('subject').value;
+      const message = document.getElementById('message').value;
+      const previewBox = document.getElementById('previewBox');
+
+      if (!recipients || !subject || !message) {
+        previewBox.style.display = 'block';
+        previewBox.textContent = 'Please fill in all fields to see preview.';
+        return;
+      }
+
+      // Simple placeholder replacement for preview
+      const previewMessage = message
+        .replace(/\{\{\s*name\s*\}\}/g, 'Candidate Name')
+        .replace(/\{\{\s*email\s*\}\}/g, recipients.split(',')[0].trim())
+        .replace(/\{\{\s*session_id\s*\}\}/g, 'demo-session-123');
+
+      previewBox.style.display = 'block';
+      previewBox.innerHTML = `<strong>To:</strong> ${recipients}\n<strong>Subject:</strong> ${subject}\n\n<strong>Message:</strong>\n${previewMessage}`;
+    }
+
+    // Auto-fill from URL params if present
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('email')) {
+      document.getElementById('recipients').value = urlParams.get('email');
+    }
+    if (urlParams.get('name')) {
+      const messageField = document.getElementById('message');
+      messageField.placeholder = `Hi ${urlParams.get('name')},\n\nEnter your personalized message here...`;
+    }
+  </script>
+</body>
+</html>

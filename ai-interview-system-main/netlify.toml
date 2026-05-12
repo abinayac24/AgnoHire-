@@ -1,0 +1,8 @@
+[build]
+  command = "echo 'Flask application - no build step required'"
+  publish = "."
+
+[[redirects]]
+  from = "/*"
+  to = "/"
+  status = 200

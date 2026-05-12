@@ -1,0 +1,17 @@
+fastapi
+uvicorn
+torch
+openai-whisper
+python-multipart
+python-dotenv
+reportlab
+pymongo
+sentence-transformers>=3,<4
+pandas
+openpyxl
+PyPDF2
+requests
+ffmpeg-python
+nemo-toolkit[asr]
+librosa
+soundfile

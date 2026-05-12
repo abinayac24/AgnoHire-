@@ -1,0 +1,113 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+venv*/
+env*/
+ENV*/
+.venv310/
+.venv/
+venv/
+__pycache__/
+runtime_logs/
+*.pyc
+# Environment files
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+logs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node.js (if applicable)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependencies
+tools/
+ffmpeg/
+
+# Temporary files
+*.tmp
+*.temp
+cache/
+Cache/
+
+# Large files (avoid committing)
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Audio/Video files (temporary)
+*.wav
+*.mp3
+*.mp4
+*.webm
+
+# Build outputs
+build/
+dist/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# Environments
+.env.venv
+.env.local

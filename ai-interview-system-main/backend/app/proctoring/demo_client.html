@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Proctoring Demo</title>
+  <style>
+    body { font-family: Segoe UI, Arial, sans-serif; background: #0f172a; color: #e2e8f0; margin: 0; }
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 16px; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .panel { background: #111827; border: 1px solid #334155; border-radius: 10px; padding: 10px; }
+    video, img { width: 100%; border-radius: 8px; background: #020617; }
+    .alerts { max-height: 280px; overflow: auto; font-size: 13px; line-height: 1.35; }
+    .alert { border-bottom: 1px solid #334155; padding: 6px 0; }
+    .warn { color: #fca5a5; font-weight: 700; }
+    .ok { color: #86efac; }
+    button { background: #2563eb; color: #fff; border: none; border-radius: 8px; padding: 8px 12px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h2>Real-Time AI Proctoring Demo</h2>
+    <p>Strict-sensitivity monitoring using YOLO + MediaPipe + FastAPI WebSocket.</p>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
+      <button id="startBtn">Start Monitoring</button>
+      <button id="stopBtn">Stop</button>
+      <span id="status" class="ok">Idle</span>
+    </div>
+    <div class="row">
+      <div class="panel">
+        <h3>Webcam</h3>
+        <video id="cam" autoplay muted playsinline></video>
+      </div>
+      <div class="panel">
+        <h3>Annotated Stream</h3>
+        <img id="annotated" alt="Annotated output" />
+      </div>
+    </div>
+    <div class="row" style="margin-top:12px;">
+      <div class="panel">
+        <h3>Metrics</h3>
+        <pre id="metrics">{}</pre>
+      </div>
+      <div class="panel">
+        <h3>Alerts</h3>
+        <div id="alerts" class="alerts"></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const cam = document.getElementById("cam");
+    const annotated = document.getElementById("annotated");
+    const alerts = document.getElementById("alerts");
+    const metrics = document.getElementById("metrics");
+    const statusEl = document.getElementById("status");
+    const sessionId = "demo-" + Math.random().toString(16).slice(2);
+    const wsUrl = (location.protocol === "https:" ? "wss://" : "ws://") + location.host + "/api/proctoring/ws";
+    let ws = null;
+    let stream = null;
+    let loopHandle = null;
+
+    function setStatus(text, ok = true) {
+      statusEl.textContent = text;
+      statusEl.className = ok ? "ok" : "warn";
+    }
+
+    function addAlerts(items) {
+      if (!Array.isArray(items) || !items.length) return;
+      for (const a of items) {
+        const div = document.createElement("div");
+        div.className = "alert warn";
+        div.textContent = `[${a.timestamp}] ${a.message}`;
+        alerts.prepend(div);
+      }
+      while (alerts.children.length > 120) alerts.removeChild(alerts.lastChild);
+    }
+
+    function captureFrameBase64() {
+      const c = document.createElement("canvas");
+      c.width = cam.videoWidth || 640;
+      c.height = cam.videoHeight || 480;
+      c.getContext("2d").drawImage(cam, 0, 0, c.width, c.height);
+      return c.toDataURL("image/jpeg", 0.65);
+    }
+
+    async function start() {
+      stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      cam.srcObject = stream;
+      ws = new WebSocket(wsUrl);
+      ws.onopen = () => setStatus("Connected", true);
+      ws.onerror = () => setStatus("WebSocket error", false);
+      ws.onclose = () => setStatus("Disconnected", false);
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.error) {
+          setStatus(data.error, false);
+          return;
+        }
+        if (data.annotated_image_base64) annotated.src = data.annotated_image_base64;
+        if (data.metrics) metrics.textContent = JSON.stringify(data.metrics, null, 2);
+        addAlerts(data.alerts || []);
+      };
+
+      loopHandle = setInterval(() => {
+        if (!ws || ws.readyState !== WebSocket.OPEN) return;
+        if (!cam.videoWidth) return;
+        ws.send(JSON.stringify({
+          session_id: sessionId,
+          image_base64: captureFrameBase64(),
+          include_annotated_image: true
+        }));
+      }, 80); // ~12.5 FPS outbound
+    }
+
+    function stop() {
+      if (loopHandle) clearInterval(loopHandle);
+      loopHandle = null;
+      if (ws) ws.close();
+      ws = null;
+      if (stream) {
+        for (const t of stream.getTracks()) t.stop();
+      }
+      stream = null;
+      setStatus("Stopped", false);
+    }
+
+    document.getElementById("startBtn").onclick = () => start().catch((e) => setStatus(e.message, false));
+    document.getElementById("stopBtn").onclick = stop;
+  </script>
+</body>
+</html>
+

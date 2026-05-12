@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Reports</title>
+  <style>
+    :root{--bg:#0b1020;--panel:#121a2f;--line:rgba(148,163,184,.16);--text:#ecf4ff;--muted:#96a7c2;--accent:#4cc9f0;--accent-soft:rgba(76,201,240,.14);--danger:#ef4444;}
+    *{box-sizing:border-box;}
+    body{margin:0;font-family:"Segoe UI",Tahoma,sans-serif;background:linear-gradient(180deg,#0a0f1d 0%,#0e1527 100%);color:var(--text);}
+    .layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh;}
+    .sidebar{padding:24px 18px;border-right:1px solid var(--line);background:rgba(8,12,24,.86);}
+    .brand{font-size:26px;font-weight:900}.brand span{color:var(--accent);}
+    .nav{display:grid;gap:10px;margin-top:28px;}
+    .nav a{padding:12px 14px;border-radius:14px;text-decoration:none;color:var(--text);border:1px solid transparent;font-weight:700;}
+    .nav a.active,.nav a:hover{background:var(--accent-soft);border-color:rgba(76,201,240,.18);}
+    .main{padding:28px 24px;}
+    h1{margin:0;font-size:34px;letter-spacing:-.04em;}
+    .sub{color:var(--muted);margin-top:8px;line-height:1.7;}
+    .err{margin-top:16px;padding:12px 14px;border-radius:14px;background:rgba(239,68,68,.12);color:#fecaca;border:1px solid rgba(239,68,68,.18);}
+    .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:22px;}
+    .card{background:linear-gradient(180deg,rgba(18,26,47,.96),rgba(15,22,39,.96));border:1px solid var(--line);border-radius:20px;padding:18px;}
+    .label{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+    .value{margin-top:10px;font-size:34px;font-weight:900;}
+    .section{background:linear-gradient(180deg,rgba(18,26,47,.96),rgba(15,22,39,.96));border:1px solid var(--line);border-radius:20px;padding:18px;margin-top:18px;}
+    .section h2{margin:0 0 12px;font-size:22px;}
+    table{width:100%;border-collapse:collapse;}
+    th,td{padding:12px 10px;border-bottom:1px solid rgba(148,163,184,.1);text-align:left;font-size:14px;vertical-align:top;}
+    th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+    .bar{display:grid;grid-template-columns:180px 1fr 56px;gap:10px;align-items:center;padding:8px 0;}
+    .track{height:10px;border-radius:999px;background:rgba(148,163,184,.14);overflow:hidden;}
+    .fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#4cc9f0,#7dd3fc);}
+    @media (max-width:1100px){.layout{grid-template-columns:1fr;}.sidebar{border-right:none;border-bottom:1px solid var(--line);}.grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+    @media (max-width:700px){.grid{grid-template-columns:1fr;}.bar{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">Agno<span>Hire</span></div>
+      <nav class="nav">
+        <a href="/admin">Dashboard</a>
+        <a href="/admin/users">Users</a>
+        <a href="/admin/voice-users">Voice Users</a>
+        <a href="/admin/results">Results</a>
+        <a class="active" href="/admin/reports">Reports</a>
+        <a href="/admin/email">Personalized Email</a>
+        <a href="/admin/logout">Logout</a>
+      </nav>
+    </aside>
+    <main class="main">
+      <h1>Reports & Analytics</h1>
+      <div class="sub">Performance trends, top candidates, and repeated weak areas across interviews.</div>
+      {% if error %}<div class="err">{{ error }}</div>{% endif %}
+
+      <section class="grid">
+        <div class="card"><div class="label">Communication Avg</div><div class="value">{{ analytics.average_scores.communication if analytics.average_scores else 0 }}</div></div>
+        <div class="card"><div class="label">Confidence Avg</div><div class="value">{{ analytics.average_scores.confidence if analytics.average_scores else 0 }}</div></div>
+        <div class="card"><div class="label">Technical Avg</div><div class="value">{{ analytics.average_scores.technical if analytics.average_scores else 0 }}</div></div>
+        <div class="card"><div class="label">Average Overall</div><div class="value">{{ analytics.average_scores.overall if analytics.average_scores else 0 }}</div></div>
+      </section>
+
+      <section class="section">
+        <h2>Top Candidates</h2>
+        <table>
+          <thead><tr><th>Name</th><th>Email</th><th>Score</th><th>Timestamp</th></tr></thead>
+          <tbody>
+            {% for item in analytics.top_candidates or [] %}
+            <tr>
+              <td>{{ item.candidate_name }}</td>
+              <td>{{ item.candidate_email or "-" }}</td>
+              <td>{{ item.overall_score }}</td>
+              <td>{{ item.timestamp }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" class="sub">No top-candidate data available.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section">
+        <h2>Weak Areas Analysis</h2>
+        {% for item in analytics.weak_areas or [] %}
+        <div class="bar">
+          <div>{{ item.label }}</div>
+          <div class="track"><div class="fill" style="width: {{ [item.count * 12, 100]|min }}%;"></div></div>
+          <div>{{ item.count }}</div>
+        </div>
+        {% else %}
+        <div class="sub">No weak-area data available.</div>
+        {% endfor %}
+      </section>
+
+      <section class="section">
+        <h2>Alert Summary</h2>
+        {% for item in analytics.alert_summary or [] %}
+        <div class="bar">
+          <div>{{ item.label }}</div>
+          <div class="track"><div class="fill" style="width: {{ [item.count * 14, 100]|min }}%;"></div></div>
+          <div>{{ item.count }}</div>
+        </div>
+        {% else %}
+        <div class="sub">No alert data available.</div>
+        {% endfor %}
+      </section>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin User Detail</title>
+  <style>
+    body{font-family:"Segoe UI",Tahoma,sans-serif;margin:0;background:#f1f5f9;color:#0f172a;}
+    .wrap{max-width:1180px;margin:0 auto;padding:24px 16px;}
+    .card{background:#fff;border:1px solid #dbe3ef;border-radius:14px;padding:16px;margin-bottom:12px;}
+    h1,h2{margin:0 0 12px;}
+    .muted{color:#64748b;}
+    .err{padding:10px;border-radius:10px;background:#fee2e2;color:#991b1b;margin-bottom:10px;}
+    .ok{padding:10px;border-radius:10px;background:#dcfce7;color:#166534;margin-bottom:10px;}
+    .row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+    .box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px;}
+    .event,.ans{padding:10px;border:1px solid #e2e8f0;border-radius:10px;background:#fff;margin-top:8px;}
+    a.btn,button.btn{display:inline-block;padding:9px 12px;border:none;border-radius:10px;background:#1d4ed8;color:#fff;text-decoration:none;font-weight:700;cursor:pointer;}
+    .danger{background:#b91c1c;}
+    .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+    form.inline{display:inline;}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Admin User Detail</h1>
+      <div class="toolbar">
+      <nav class="nav">
+        <a href="/admin">Dashboard</a>
+        <a href="/admin/users">Users</a>
+        <a href="/admin/voice-users">Voice Users</a>
+        <a href="/admin/results">Results</a>
+        <a href="/admin/reports">Reports</a>
+        <a href="/admin/email">Personalized Email</a>
+        <a href="/admin/logout">Logout</a>
+      </nav>
+      {% if detail %}
+      <form class="inline" method="post" action="/admin/users/{{ detail.get('session', {}).get('session_id', '') }}/delete" onsubmit="return confirm('Delete this candidate data permanently?');">
+        <button class="btn danger" type="submit">Delete Candidate Data</button>
+      </form>
+      {% endif %}
+    </div>
+    {% if error %}
+    <div class="err">{{ error }}</div>
+    {% endif %}
+    {% if notice %}
+    <div class="ok">{{ notice }}</div>
+    {% endif %}
+    {% if detail %}
+    <div class="card">
+      <h2>{{ detail.get("session", {}).get("candidate_name", "Candidate") }}</h2>
+      <div class="row">
+        <div class="box"><strong>Session</strong><div class="muted">{{ detail.get("session", {}).get("session_id", "-") }}</div></div>
+        <div class="box"><strong>Email</strong><div class="muted">{{ detail.get("session", {}).get("candidate_email", "-") or "-" }}</div></div>
+        <div class="box"><strong>Mode</strong><div class="muted">{{ detail.get("session", {}).get("mode", "-") }}</div></div>
+        <div class="box"><strong>Status</strong><div class="muted">{{ detail.get("session", {}).get("status", "-") }}</div></div>
+        <div class="box"><strong>Termination</strong><div class="muted">{{ detail.get("session", {}).get("termination_reason", "-") or "-" }}</div></div>
+        <div class="box"><strong>Ended By</strong><div class="muted">{{ detail.get("session", {}).get("ended_by", "-") or "-" }}</div></div>
+      </div>
+      {% if detail.get("session", {}).get("candidate_email") %}
+      <div style="margin-top:16px;">
+        <a class="btn" href="/admin/email?email={{ detail.get("session", {}).get("candidate_email") | urlencode }}&name={{ detail.get("session", {}).get("candidate_name") | urlencode }}">Send Personalized Email</a>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="card">
+      <h2>Answers</h2>
+      {% for item in detail.get("answers", []) %}
+      <div class="ans">
+        <div><strong>Q:</strong> {{ item.get("question", "-") }}</div>
+        <div><strong>A:</strong> {{ item.get("user_answer", "-") }}</div>
+        <div class="muted">Score: {{ item.get("score", 0) }}</div>
+      </div>
+      {% else %}
+      <p class="muted">No answers captured.</p>
+      {% endfor %}
+    </div>
+
+    <div class="card">
+      <h2>Final Feedback Summary</h2>
+      {% if detail.get("final_report") %}
+      <div class="row">
+        <div class="box"><strong>Total Score</strong><div class="muted">{{ detail.get("final_report", {}).get("total_score", 0) }} / 50</div></div>
+        <div class="box"><strong>Result</strong><div class="muted">{{ detail.get("final_report", {}).get("result_status", "FAIL") }}</div></div>
+        <div class="box"><strong>Technical</strong><div class="muted">{{ detail.get("final_report", {}).get("scores", {}).get("technical", "-") }}</div></div>
+      </div>
+      <p style="margin-top:12px;"><strong>Final Feedback:</strong> {{ detail.get("final_report", {}).get("final_feedback", "-") }}</p>
+      <p><strong>Alerts:</strong> {{ (detail.get("final_report", {}).get("alerts", []))|join(", ") if detail.get("final_report", {}).get("alerts") else "No alerts recorded." }}</p>
+      {% else %}
+      <p class="muted">No final report available yet.</p>
+      {% endif %}
+    </div>
+
+    <div class="card">
+      <h2>Session Events</h2>
+      {% for event in detail.get("events", []) %}
+      <div class="event">
+        <div><strong>{{ event.get("type", "-") }}</strong> <span class="muted">({{ event.get("level", "-") }})</span></div>
+        <div>{{ event.get("message", "-") }}</div>
+        <div class="muted">{{ event.get("timestamp", "-") }}</div>
+      </div>
+      {% else %}
+      <p class="muted">No events logged.</p>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</body>
+</html>

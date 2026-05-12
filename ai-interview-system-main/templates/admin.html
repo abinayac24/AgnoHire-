@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Admin Panel</title>
+
+<style>
+
+body{
+font-family:Segoe UI;
+background:#1e293b;
+color:white;
+text-align:center;
+padding:40px;
+}
+
+.container{
+background:white;
+color:black;
+width:700px;
+margin:auto;
+padding:30px;
+border-radius:12px;
+}
+
+input,textarea{
+width:90%;
+padding:8px;
+margin:5px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+button{
+padding:10px 15px;
+background:#2563eb;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+.card{
+background:#f1f5f9;
+padding:10px;
+margin:10px;
+border-radius:6px;
+}
+
+.delete{
+color:red;
+font-weight:bold;
+background:none;
+border:none;
+padding:0;
+cursor:pointer;
+font:inherit;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Admin Panel</h2>
+
+<h3>Add Question</h3>
+
+<form action="/add_question" method="POST">
+
+<input name="domain" placeholder="Domain" required>
+
+<textarea name="question" placeholder="Interview Question" required></textarea>
+
+<input name="correct" placeholder="Correct Answer">
+
+<input name="keywords" placeholder="Keywords">
+
+<button type="submit">Add Question</button>
+
+</form>
+
+<hr>
+
+<h3>Saved Questions</h3>
+
+{% for q in questions %}
+
+<div class="card">
+
+<p><b>Domain:</b> {{q.domain}}</p>
+
+<p>{{q.question}}</p>
+
+<form action="/delete/{{q.id}}" method="POST" style="display:inline;">
+  <button class="delete" type="submit">Delete</button>
+</form>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</body>
+
+</html>

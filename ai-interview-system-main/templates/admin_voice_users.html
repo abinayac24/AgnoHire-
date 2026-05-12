@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voice Registered Users - Admin</title>
+  <style>
+    :root{--bg:#0b1020;--panel:#121a2f;--line:rgba(148,163,184,.16);--text:#ecf4ff;--muted:#96a7c2;--accent:#4cc9f0;--danger:#ef4444;--ok:#22c55e;--warn:#f59e0b;}
+    *{box-sizing:border-box;} body{margin:0;font-family:"Segoe UI",Tahoma,sans-serif;background:linear-gradient(180deg,#0a0f1d 0%,#0e1527 100%);color:var(--text);}
+    .layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh;}
+    .sidebar{padding:24px 18px;border-right:1px solid var(--line);background:rgba(8,12,24,.86);}
+    .brand{font-size:26px;font-weight:900}.brand span{color:var(--accent);}
+    .nav{display:grid;gap:10px;margin-top:28px;}
+    .nav a{padding:12px 14px;border-radius:14px;text-decoration:none;color:var(--text);font-weight:700;border:1px solid transparent;}
+    .nav a.active,.nav a:hover{background:rgba(76,201,240,.14);border-color:rgba(76,201,240,.18);}
+    .main{padding:28px 24px;}
+    h1{margin:0;font-size:34px;letter-spacing:-.04em;} .sub{color:var(--muted);margin-top:8px;line-height:1.7;}
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-top:20px;}
+    .stat-card{background:linear-gradient(180deg,rgba(18,26,47,.96),rgba(15,22,39,.96));border:1px solid var(--line);border-radius:16px;padding:18px;text-align:center;}
+    .stat-value{font-size:32px;font-weight:800;color:var(--accent);}
+    .stat-label{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:6px;}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px;align-items:center;}
+    input{padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:#10192f;color:var(--text);min-width:280px;}
+    select{padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:#10192f;color:var(--text);}
+    button,a.btn{padding:12px 14px;border:none;border-radius:14px;background:#1f6feb;color:#fff;text-decoration:none;font-weight:800;cursor:pointer;}
+    a.btn-secondary{padding:12px 14px;border:none;border-radius:14px;background:rgba(148,163,184,.2);color:var(--text);text-decoration:none;font-weight:800;cursor:pointer;display:inline-block;}
+    .danger{background:#b91c1c;}
+    .warn{background:#d97706;}
+    .section{background:linear-gradient(180deg,rgba(18,26,47,.96),rgba(15,22,39,.96));border:1px solid var(--line);border-radius:20px;padding:18px;margin-top:18px;}
+    .err,.ok,.warn-alert{padding:12px 14px;border-radius:14px;margin-top:14px;}
+    .err{background:rgba(239,68,68,.12);color:#fecaca;border:1px solid rgba(239,68,68,.18);}
+    .ok{background:rgba(34,197,94,.12);color:#bbf7d0;border:1px solid rgba(34,197,94,.18);}
+    .warn-alert{background:rgba(245,158,11,.12);color:#fde68a;border:1px solid rgba(245,158,11,.18);}
+    table{width:100%;border-collapse:collapse;}
+    th,td{padding:12px 10px;border-bottom:1px solid rgba(148,163,184,.1);text-align:left;font-size:14px;vertical-align:top;}
+    th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+    .badge{display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;}
+    .badge-active{background:rgba(34,197,94,.15);color:#4ade80;}
+    .badge-inactive{background:rgba(148,163,184,.15);color:var(--muted);}
+    .badge-pending{background:rgba(245,158,11,.15);color:#fbbf24;}
+    .actions{display:flex;gap:8px;flex-wrap:wrap;} form.inline{display:inline;}
+    .text-muted{color:var(--muted);font-size:13px;}
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:1000;}
+    .modal-overlay.active{display:flex;}
+    .modal{background:linear-gradient(180deg,#121a2f,#0f1727);border:1px solid var(--line);border-radius:20px;padding:28px;max-width:480px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.4);}
+    .modal h3{margin:0 0 12px;font-size:22px;}
+    .modal p{margin:0 0 20px;color:var(--muted);line-height:1.6;}
+    .modal-actions{display:flex;gap:12px;justify-content:flex-end;}
+    .modal-btn{padding:12px 20px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--text);cursor:pointer;font-weight:600;}
+    .modal-btn-confirm{background:var(--danger);border-color:var(--danger);color:#fff;}
+    @media (max-width:1100px){.layout{grid-template-columns:1fr;}.sidebar{border-right:none;border-bottom:1px solid var(--line);}}
+    .sort-icon{font-size:10px;margin-left:4px;}
+    .th-sort{cursor:pointer;user-select:none;}
+    .th-sort:hover{color:var(--accent);}
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">Agno<span>Hire</span></div>
+      <nav class="nav">
+        <a href="/admin">Dashboard</a>
+        <a href="/admin/users">Users</a>
+        <a class="active" href="/admin/voice-users">Voice Users</a>
+        <a href="/admin/results">Results</a>
+        <a href="/admin/reports">Reports</a>
+        <a href="/admin/email">Personalized Email</a>
+        <a href="/admin/logout">Logout</a>
+      </nav>
+    </aside>
+    <main class="main">
+      <h1>Voice Registered Users</h1>
+      <div class="sub">Manage voice-authenticated users and their voice profiles. View registration details, authentication history, and perform administrative actions.</div>
+
+      {% if stats %}
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value">{{ stats.total_profiles or 0 }}</div>
+          <div class="stat-label">Total Profiles</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">{{ stats.recent_registrations or 0 }}</div>
+          <div class="stat-label">New (7 days)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">{{ stats.total_auth_attempts or 0 }}</div>
+          <div class="stat-label">Auth Attempts</div>
+        </div>
+        {% if stats.successful_auths is defined %}
+        <div class="stat-card">
+          <div class="stat-value">{{ stats.successful_auths or 0 }}</div>
+          <div class="stat-label">Successful</div>
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <form method="get" class="toolbar" id="filterForm">
+        <input name="q" value="{{ query }}" placeholder="Search by username or email">
+        <select name="sort" id="sortSelect">
+          <option value="newest" {% if request.args.get('sort') == 'newest' or not request.args.get('sort') %}selected{% endif %}>Newest First</option>
+          <option value="oldest" {% if request.args.get('sort') == 'oldest' %}selected{% endif %}>Oldest First</option>
+          <option value="username" {% if request.args.get('sort') == 'username' %}selected{% endif %}>Username A-Z</option>
+        </select>
+        <button type="submit">Filter</button>
+        <a class="btn-secondary" href="/admin/voice-users">Reset</a>
+      </form>
+
+      {% if error %}<div class="err">{{ error }}</div>{% endif %}
+      {% if notice %}<div class="ok">{{ notice }}</div>{% endif %}
+
+      <section class="section">
+        <table id="profilesTable">
+          <thead>
+            <tr>
+              <th class="th-sort" onclick="sortTable('username')">Username<span class="sort-icon" id="sort-username"></span></th>
+              <th>Email</th>
+              <th>Status</th>
+              <th>Samples</th>
+              <th>Registered</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for profile in profiles %}
+            <tr data-username="{{ profile.username }}" data-created="{{ profile.created_at }}">
+              <td><strong>{{ profile.username }}</strong></td>
+              <td>{{ profile.email or "-" }}</td>
+              <td>
+                <span class="badge badge-active">Active</span>
+              </td>
+              <td>{{ profile.enrollment_samples or 0 }}</td>
+              <td>{{ profile.created_at.strftime('%Y-%m-%d %H:%M') if profile.created_at else '-' }}</td>
+              <td>
+                <div class="actions">
+                  <a class="btn" href="/admin/voice-users/{{ profile.username }}">View</a>
+                  <button class="warn" onclick="showResetModal('{{ profile.username }}')">Reset</button>
+                  <button class="danger" onclick="showDeleteModal('{{ profile.username }}')">Delete</button>
+                </div>
+              </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6" class="text-muted">No voice registered users found.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal">
+      <h3>Delete Voice Profile</h3>
+      <p>Are you sure you want to delete the voice profile for <strong id="deleteUsername"></strong>? This will remove the profile and all authentication logs. This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button class="modal-btn" onclick="closeModals()">Cancel</button>
+        <form class="inline" method="post" id="deleteForm">
+          <button type="submit" class="modal-btn modal-btn-confirm">Delete Profile</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reset Confirmation Modal -->
+  <div class="modal-overlay" id="resetModal">
+    <div class="modal">
+      <h3>Reset Voice Profile</h3>
+      <p>Are you sure you want to reset the voice profile for <strong id="resetUsername"></strong>? The user will need to re-register their voice to authenticate again.</p>
+      <div class="modal-actions">
+        <button class="modal-btn" onclick="closeModals()">Cancel</button>
+        <form class="inline" method="post" id="resetForm">
+          <button type="submit" class="modal-btn modal-btn-confirm">Reset Profile</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentSort = { field: 'created_at', dir: 'desc' };
+    
+    function showDeleteModal(username) {
+      document.getElementById('deleteUsername').textContent = username;
+      document.getElementById('deleteForm').action = '/admin/voice-users/' + encodeURIComponent(username) + '/delete';
+      document.getElementById('deleteModal').classList.add('active');
+    }
+    
+    function showResetModal(username) {
+      document.getElementById('resetUsername').textContent = username;
+      document.getElementById('resetForm').action = '/admin/voice-users/' + encodeURIComponent(username) + '/reset';
+      document.getElementById('resetModal').classList.add('active');
+    }
+    
+    function closeModals() {
+      document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+    }
+    
+    // Close modal on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+      modal.addEventListener('click', function(e) {
+        if (e.target === this) closeModals();
+      });
+    });
+    
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeModals();
+    });
+    
+    // Table sorting
+    function sortTable(field) {
+      const table = document.getElementById('profilesTable');
+      const tbody = table.querySelector('tbody');
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+      
+      if (field === 'username') {
+        currentSort.field = 'username';
+        currentSort.dir = currentSort.field === 'username' && currentSort.dir === 'asc' ? 'desc' : 'asc';
+        
+        rows.sort((a, b) => {
+          const aVal = a.dataset.username || '';
+          const bVal = b.dataset.username || '';
+          return currentSort.dir === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+        });
+      }
+      
+      // Update sort indicators
+      document.querySelectorAll('.sort-icon').forEach(icon => icon.textContent = '');
+      const indicator = currentSort.dir === 'asc' ? ' ▲' : ' ▼';
+      const icon = document.getElementById('sort-' + field);
+      if (icon) icon.textContent = indicator;
+      
+      // Re-append rows in sorted order
+      rows.forEach(row => tbody.appendChild(row));
+    }
+  </script>
+</body>
+</html>

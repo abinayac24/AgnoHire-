@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voice User Details - {{ username }} - Admin</title>
+  <style>
+    :root{--bg:#0b1020;--panel:#121a2f;--line:rgba(148,163,184,.16);--text:#ecf4ff;--muted:#96a7c2;--accent:#4cc9f0;--danger:#ef4444;--ok:#22c55e;--warn:#f59e0b;--info:#3b82f6;}
+    *{box-sizing:border-box;} body{margin:0;font-family:"Segoe UI",Tahoma,sans-serif;background:linear-gradient(180deg,#0a0f1d 0%,#0e1527 100%);color:var(--text);}
+    .layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh;}
+    .sidebar{padding:24px 18px;border-right:1px solid var(--line);background:rgba(8,12,24,.86);}
+    .brand{font-size:26px;font-weight:900}.brand span{color:var(--accent);}
+    .nav{display:grid;gap:10px;margin-top:28px;}
+    .nav a{padding:12px 14px;border-radius:14px;text-decoration:none;color:var(--text);font-weight:700;border:1px solid transparent;}
+    .nav a.active,.nav a:hover{background:rgba(76,201,240,.14);border-color:rgba(76,201,240,.18);}
+    .main{padding:28px 24px;}
+    h1{margin:0;font-size:34px;letter-spacing:-.04em;} .sub{color:var(--muted);margin-top:8px;line-height:1.7;}
+    .breadcrumb{margin-bottom:16px;color:var(--muted);font-size:14px;}
+    .breadcrumb a{color:var(--accent);text-decoration:none;}
+    .breadcrumb a:hover{text-decoration:underline;}
+    .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-top:20px;}
+    @media (max-width:900px){.grid-2{grid-template-columns:1fr;}}
+    .card{background:linear-gradient(180deg,rgba(18,26,47,.96),rgba(15,22,39,.96));border:1px solid var(--line);border-radius:20px;padding:22px;}
+    .card h3{margin:0 0 18px;font-size:20px;display:flex;align-items:center;gap:10px;}
+    .card h3 .icon{width:36px;height:36px;border-radius:10px;background:rgba(76,201,240,.15);display:flex;align-items:center;justify-content:center;font-size:18px;}
+    .meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;}
+    .meta-item{display:flex;flex-direction:column;gap:4px;}
+    .meta-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+    .meta-value{font-size:16px;font-weight:600;}
+    .status-badge{display:inline-block;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:700;}
+    .status-active{background:rgba(34,197,94,.15);color:#4ade80;}
+    .status-inactive{background:rgba(239,68,68,.15);color:#f87171;}
+    .toolbar{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px;}
+    button,a.btn{padding:12px 18px;border:none;border-radius:14px;background:#1f6feb;color:#fff;text-decoration:none;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:8px;}
+    a.btn-secondary{padding:12px 18px;border-radius:14px;background:rgba(148,163,184,.2);color:var(--text);text-decoration:none;font-weight:800;display:inline-flex;align-items:center;gap:8px;}
+    .danger{background:#b91c1c;}
+    .warn{background:#d97706;}
+    .err,.ok,.warn-alert{padding:14px 18px;border-radius:14px;margin-top:16px;}
+    .err{background:rgba(239,68,68,.12);color:#fecaca;border:1px solid rgba(239,68,68,.18);}
+    .ok{background:rgba(34,197,94,.12);color:#bbf7d0;border:1px solid rgba(34,197,94,.18);}
+    .warn-alert{background:rgba(245,158,11,.12);color:#fde68a;border:1px solid rgba(245,158,11,.18);}
+    .section{background:linear-gradient(180deg,rgba(18,26,47,.96),rgba(15,22,39,.96));border:1px solid var(--line);border-radius:20px;padding:22px;margin-top:20px;}
+    .section h3{margin:0 0 16px;font-size:18px;}
+    table{width:100%;border-collapse:collapse;font-size:14px;}
+    th,td{padding:12px;border-bottom:1px solid rgba(148,163,184,.1);text-align:left;}
+    th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:rgba(8,12,24,.4);}
+    tr:hover{background:rgba(76,201,240,.05);}
+    .log-success{color:#4ade80;}
+    .log-fail{color:#f87171;}
+    .form-group{margin-bottom:18px;}
+    .form-group label{display:block;margin-bottom:6px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+    .form-group input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:#10192f;color:var(--text);}
+    .actions{display:flex;gap:12px;margin-top:20px;}
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:1000;}
+    .modal-overlay.active{display:flex;}
+    .modal{background:linear-gradient(180deg,#121a2f,#0f1727);border:1px solid var(--line);border-radius:20px;padding:28px;max-width:480px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.4);}
+    .modal h3{margin:0 0 12px;font-size:22px;}
+    .modal p{margin:0 0 20px;color:var(--muted);line-height:1.6;}
+    .modal-actions{display:flex;gap:12px;justify-content:flex-end;}
+    .modal-btn{padding:12px 20px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--text);cursor:pointer;font-weight:600;}
+    .modal-btn-confirm{background:var(--danger);border-color:var(--danger);color:#fff;}
+    .empty-state{text-align:center;padding:40px 20px;color:var(--muted);}
+    .empty-state-icon{font-size:48px;margin-bottom:16px;opacity:.5;}
+    @media (max-width:1100px){.layout{grid-template-columns:1fr;}.sidebar{border-right:none;border-bottom:1px solid var(--line);}}
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">Agno<span>Hire</span></div>
+      <nav class="nav">
+        <a href="/admin">Dashboard</a>
+        <a href="/admin/users">Users</a>
+        <a class="active" href="/admin/voice-users">Voice Users</a>
+        <a href="/admin/results">Results</a>
+        <a href="/admin/reports">Reports</a>
+        <a href="/admin/email">Personalized Email</a>
+        <a href="/admin/logout">Logout</a>
+      </nav>
+    </aside>
+    <main class="main">
+      <div class="breadcrumb">
+        <a href="/admin/voice-users">Voice Users</a> / <span>{{ username }}</span>
+      </div>
+      <h1>{{ username }}</h1>
+      <div class="sub">Voice profile details, authentication history, and management actions.</div>
+
+      {% if error %}<div class="err">{{ error }}</div>{% endif %}
+      {% if notice %}<div class="ok">{{ notice }}</div>{% endif %}
+
+      {% if detail %}
+      <div class="toolbar">
+        <a class="btn-secondary" href="/admin/voice-users">&larr; Back to List</a>
+        <button class="warn" onclick="showEditModal()">Edit Profile</button>
+        <button class="warn" onclick="showResetModal()">Reset Profile</button>
+        <button class="danger" onclick="showDeleteModal()">Delete Profile</button>
+      </div>
+
+      <div class="grid-2">
+        <!-- Profile Info Card -->
+        <div class="card">
+          <h3><div class="icon">👤</div>Profile Information</h3>
+          <div class="meta-grid">
+            <div class="meta-item">
+              <span class="meta-label">Username</span>
+              <span class="meta-value">{{ detail.profile.username }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Email</span>
+              <span class="meta-value">{{ detail.profile.email or "Not set" }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Profile Hash</span>
+              <span class="meta-value" style="font-family:monospace;font-size:12px;color:var(--muted);">{{ detail.profile.username_hash[:16] }}...</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Status</span>
+              <span class="status-badge status-active">Active</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Embedding Dimension</span>
+              <span class="meta-value">{{ detail.profile.embedding_dim or "Unknown" }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Model Type</span>
+              <span class="meta-value">{{ detail.profile.model_type or "local-mfcc-voice-password" }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Registration Stats Card -->
+        <div class="card">
+          <h3><div class="icon">📊</div>Registration & Usage</h3>
+          <div class="meta-grid">
+            <div class="meta-item">
+              <span class="meta-label">Enrollment Samples</span>
+              <span class="meta-value">{{ detail.profile.enrollment_samples or 0 }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Registered On</span>
+              <span class="meta-value">{{ detail.profile.created_at.strftime('%Y-%m-%d %H:%M UTC') if detail.profile.created_at else 'Unknown' }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Last Updated</span>
+              <span class="meta-value">{{ detail.profile.updated_at.strftime('%Y-%m-%d %H:%M UTC') if detail.profile.updated_at else 'Unknown' }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Total Login Attempts</span>
+              <span class="meta-value">{{ detail.stats.total_attempts or 0 }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Successful Logins</span>
+              <span class="meta-value" style="color:#4ade80;">{{ detail.stats.successful_attempts or 0 }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Last Voice Login</span>
+              <span class="meta-value">{{ detail.stats.last_login.strftime('%Y-%m-%d %H:%M UTC') if detail.stats.last_login else 'Never' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Authentication Logs -->
+      {% if detail.auth_logs %}
+      <section class="section">
+        <h3>Recent Authentication Attempts</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Status</th>
+              <th>Score</th>
+              <th>Threshold</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for log in detail.auth_logs[:10] %}
+            <tr>
+              <td>{{ log.created_at.strftime('%Y-%m-%d %H:%M:%S UTC') if log.created_at else '-' }}</td>
+              <td class="{{ 'log-success' if log.success else 'log-fail' }}">
+                {{ 'Success' if log.success else 'Failed' }}
+              </td>
+              <td>{{ "%.2f"|format(log.score * 100) }}%</td>
+              <td>{{ "%.2f"|format((log.threshold or 0.86) * 100) }}%</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+      {% endif %}
+
+      <!-- Interview Verification Logs -->
+      {% if detail.verification_logs %}
+      <section class="section">
+        <h3>Interview Voice Verification History</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Session</th>
+              <th>Question</th>
+              <th>Status</th>
+              <th>Score</th>
+              <th>Speakers</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for log in detail.verification_logs[:10] %}
+            <tr>
+              <td>{{ log.created_at.strftime('%Y-%m-%d %H:%M UTC') if log.created_at else '-' }}</td>
+              <td title="{{ log.session_id }}">{{ log.session_id[:8] }}...</td>
+              <td>{{ log.question_number or '-' }}</td>
+              <td class="{{ 'log-success' if log.authenticated else 'log-fail' }}">
+                {{ 'Verified' if log.authenticated else 'Failed' }}
+              </td>
+              <td>{{ "%.2f"|format(log.score * 100) }}%</td>
+              <td>{{ log.speaker_count_estimate or 1 }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+      {% endif %}
+
+      {% if not detail.auth_logs and not detail.verification_logs %}
+      <section class="section">
+        <div class="empty-state">
+          <div class="empty-state-icon">📋</div>
+          <p>No authentication or verification logs found for this user.</p>
+        </div>
+      </section>
+      {% endif %}
+
+      {% else %}
+      <div class="section" style="text-align:center;padding:60px 20px;">
+        <div style="font-size:64px;margin-bottom:20px;">🔍</div>
+        <h2>Profile Not Found</h2>
+        <p style="color:var(--muted);">No voice profile found for user "{{ username }}".</p>
+        <a class="btn" href="/admin/voice-users" style="margin-top:20px;">Back to Voice Users</a>
+      </div>
+      {% endif %}
+    </main>
+  </div>
+
+  <!-- Edit Modal -->
+  <div class="modal-overlay" id="editModal">
+    <div class="modal">
+      <h3>Edit Voice Profile</h3>
+      <form method="post" id="editForm" action="/admin/voice-users/{{ username }}/edit">
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" value="{{ detail.profile.email if detail else '' }}" placeholder="user@example.com">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn" onclick="closeModals()">Cancel</button>
+          <button type="submit" class="modal-btn" style="background:var(--info);border-color:var(--info);color:#fff;">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Reset Modal -->
+  <div class="modal-overlay" id="resetModal">
+    <div class="modal">
+      <h3>Reset Voice Profile</h3>
+      <p>Are you sure you want to reset the voice profile for <strong>{{ username }}</strong>?</p>
+      <p style="font-size:13px;color:var(--muted);">This will delete the current voice profile. The user will need to re-register their voice at the next login. This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button class="modal-btn" onclick="closeModals()">Cancel</button>
+        <form class="inline" method="post" action="/admin/voice-users/{{ username }}/reset">
+          <button type="submit" class="modal-btn modal-btn-confirm" style="background:var(--warn);border-color:var(--warn);">Reset Profile</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Modal -->
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal">
+      <h3>Delete Voice Profile</h3>
+      <p>Are you sure you want to <strong>permanently delete</strong> the voice profile for <strong>{{ username }}</strong>?</p>
+      <p style="font-size:13px;color:var(--danger);">This will remove the voice profile and all authentication/verification logs. This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button class="modal-btn" onclick="closeModals()">Cancel</button>
+        <form class="inline" method="post" action="/admin/voice-users/{{ username }}/delete">
+          <button type="submit" class="modal-btn modal-btn-confirm">Delete Permanently</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showEditModal() {
+      document.getElementById('editModal').classList.add('active');
+    }
+    
+    function showResetModal() {
+      document.getElementById('resetModal').classList.add('active');
+    }
+    
+    function showDeleteModal() {
+      document.getElementById('deleteModal').classList.add('active');
+    }
+    
+    function closeModals() {
+      document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+    }
+    
+    // Close modal on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+      modal.addEventListener('click', function(e) {
+        if (e.target === this) closeModals();
+      });
+    });
+    
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeModals();
+    });
+  </script>
+</body>
+</html>

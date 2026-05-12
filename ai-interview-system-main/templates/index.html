@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgnoHire AI Interview</title>
+    <style>
+        :root{
+            --bg:#090b18;
+            --bg-soft:#101428;
+            --panel:#11162b;
+            --panel-2:#0d1224;
+            --line:rgba(88,102,150,.22);
+            --line-strong:rgba(44,223,255,.26);
+            --text:#f7fbff;
+            --muted:#94a3c3;
+            --faint:#6e7a99;
+            --cyan:#1fd8f6;
+            --cyan-2:#15bdf0;
+            --red:#d91f2f;
+            --green:#34d399;
+            --shadow:0 30px 90px rgba(0,0,0,.42);
+        }
+
+        *{box-sizing:border-box;}
+
+        body{
+            margin:0;
+            min-height:100vh;
+            font-family:"Segoe UI",Tahoma,sans-serif;
+            color:var(--text);
+            background:
+                linear-gradient(rgba(255,255,255,.028) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.028) 1px, transparent 1px),
+                radial-gradient(circle at 50% 18%, rgba(31,216,246,.1), transparent 18%),
+                radial-gradient(circle at 8% 6%, rgba(217,31,47,.12), transparent 10%),
+                linear-gradient(180deg, #090b18 0%, #090c17 55%, #070911 100%);
+            background-size:52px 52px, 52px 52px, auto, auto, auto;
+        }
+
+        .shell{
+            max-width:1240px;
+            margin:0 auto;
+            padding:20px 18px 56px;
+        }
+
+        .topTag{
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            padding:10px 16px;
+            border-radius:12px;
+            background:linear-gradient(135deg,#cf1625,#e12733);
+            color:#fff;
+            font-size:12px;
+            font-weight:800;
+            letter-spacing:.22em;
+            text-transform:uppercase;
+            box-shadow:0 14px 40px rgba(217,31,47,.3);
+        }
+
+        .hero{
+            max-width:760px;
+            margin:64px auto 0;
+            text-align:center;
+        }
+
+        .micRing{
+            width:86px;
+            height:86px;
+            margin:0 auto;
+            border-radius:50%;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            border:1px solid rgba(31,216,246,.22);
+            background:radial-gradient(circle at center, rgba(31,216,246,.12), rgba(31,216,246,.03));
+            box-shadow:
+                0 0 0 10px rgba(31,216,246,.03),
+                0 0 32px rgba(31,216,246,.12);
+        }
+
+        .micRing svg{
+            width:34px;
+            height:34px;
+            fill:none;
+            stroke:var(--cyan);
+            stroke-width:1.9;
+            stroke-linecap:round;
+            stroke-linejoin:round;
+        }
+
+        .brand{
+            margin:22px 0 0;
+            font-size:54px;
+            font-weight:900;
+            letter-spacing:-.04em;
+        }
+
+        .brand span{
+            color:var(--cyan);
+        }
+
+        .engine{
+            display:inline-flex;
+            align-items:center;
+            gap:10px;
+            margin-top:20px;
+            padding:11px 18px;
+            border-radius:999px;
+            border:1px solid rgba(31,216,246,.18);
+            background:rgba(7,30,42,.62);
+            color:#86ecff;
+            font-size:12px;
+            font-weight:800;
+            letter-spacing:.22em;
+            text-transform:uppercase;
+        }
+
+        .engine::before{
+            content:"";
+            width:8px;
+            height:8px;
+            border-radius:50%;
+            background:var(--cyan);
+            box-shadow:0 0 16px rgba(31,216,246,.35);
+        }
+
+        .voiceWave{
+            display:flex;
+            justify-content:center;
+            align-items:flex-end;
+            gap:5px;
+            height:54px;
+            margin-top:26px;
+        }
+
+        .voiceWave span{
+            width:5px;
+            border-radius:99px;
+            background:linear-gradient(180deg,#26defb 0%, #12aee4 100%);
+            box-shadow:0 0 18px rgba(31,216,246,.24);
+            animation:wave 1.65s ease-in-out infinite;
+        }
+
+        .voiceWave span:nth-child(1){height:16px;}
+        .voiceWave span:nth-child(2){height:24px;animation-delay:.08s;}
+        .voiceWave span:nth-child(3){height:34px;animation-delay:.16s;}
+        .voiceWave span:nth-child(4){height:42px;animation-delay:.24s;}
+        .voiceWave span:nth-child(5){height:48px;animation-delay:.32s;}
+        .voiceWave span:nth-child(6){height:42px;animation-delay:.4s;}
+        .voiceWave span:nth-child(7){height:34px;animation-delay:.48s;}
+        .voiceWave span:nth-child(8){height:24px;animation-delay:.56s;}
+        .voiceWave span:nth-child(9){height:16px;animation-delay:.64s;}
+
+        .heroTitle{
+            margin:22px auto 0;
+            max-width:560px;
+            font-size:66px;
+            line-height:1.02;
+            letter-spacing:-.05em;
+            font-weight:900;
+        }
+
+        .heroTitle .accent{
+            display:block;
+            background:linear-gradient(90deg,#f9fdff 0%, #29ddff 38%, #5b7bff 72%, #8f66ff 100%);
+            -webkit-background-clip:text;
+            background-clip:text;
+            color:transparent;
+        }
+
+        .heroText{
+            max-width:520px;
+            margin:16px auto 0;
+            color:var(--faint);
+            font-size:18px;
+            line-height:1.8;
+        }
+
+        .centerPanel{
+            max-width:560px;
+            margin:34px auto 0;
+            padding:26px;
+            border-radius:30px;
+            border:1px solid var(--line);
+            background:linear-gradient(180deg, rgba(18,23,44,.92) 0%, rgba(11,15,29,.94) 100%);
+            box-shadow:var(--shadow);
+        }
+
+        .quickBtn{
+            width:100%;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:12px;
+            padding:18px 18px;
+            border:none;
+            border-radius:16px;
+            font-size:16px;
+            font-weight:900;
+            cursor:pointer;
+            transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
+        }
+
+        .quickBtn:hover{
+            transform:translateY(-1px);
+        }
+
+        .quickBtn.primary{
+            background:linear-gradient(90deg,var(--cyan) 0%, #1ccced 55%, var(--cyan-2) 100%);
+            color:#07111d;
+            box-shadow:0 18px 44px rgba(21,189,240,.28);
+        }
+
+        .quickBtn.secondary{
+            margin-top:12px;
+            background:rgba(10,14,28,.84);
+            color:#f6fbff;
+            border:1px solid rgba(89,101,146,.22);
+        }
+
+        .quickBtn.admin{
+            margin-top:12px;
+            background:linear-gradient(90deg,#d91f2f 0%, #f04f5f 100%);
+            color:#fff;
+            box-shadow:0 18px 44px rgba(217,31,47,.22);
+        }
+
+        .quickDivider{
+            margin:14px 0;
+            text-align:center;
+            color:#586480;
+            font-size:12px;
+            letter-spacing:.2em;
+            text-transform:uppercase;
+        }
+
+        .voiceStatus{
+            margin-top:14px;
+            padding:14px 16px;
+            border-radius:14px;
+            border:1px solid rgba(31,216,246,.18);
+            background:rgba(8,12,24,.72);
+            color:var(--muted);
+            font-size:14px;
+            line-height:1.6;
+        }
+
+        .voiceStatus strong{
+            color:var(--cyan);
+        }
+
+        .voiceLogout{
+            display:inline-flex;
+            margin-top:10px;
+            padding:9px 12px;
+            border:none;
+            border-radius:8px;
+            color:#fff;
+            background:#d91f2f;
+            font-weight:800;
+            cursor:pointer;
+        }
+
+        .cardGrid{
+            display:grid;
+            grid-template-columns:repeat(3,minmax(0,1fr));
+            gap:20px;
+            margin-top:28px;
+        }
+
+        .card{
+            border:1px solid var(--line);
+            border-radius:26px;
+            background:rgba(13,18,36,.82);
+            box-shadow:0 24px 70px rgba(0,0,0,.28);
+            overflow:hidden;
+        }
+
+        .cardHead{
+            padding:22px 22px 8px;
+        }
+
+        .iconBox{
+            width:54px;
+            height:54px;
+            border-radius:18px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            background:rgba(31,216,246,.1);
+            border:1px solid rgba(31,216,246,.16);
+            color:var(--cyan);
+            font-size:22px;
+            font-weight:900;
+        }
+
+        .card h3{
+            margin:16px 0 8px;
+            font-size:25px;
+            line-height:1.1;
+            font-weight:900;
+        }
+
+        .card p{
+            margin:0;
+            color:var(--muted);
+            line-height:1.7;
+            font-size:14px;
+        }
+
+        .formWrap{
+            margin:18px;
+            padding:18px;
+            border-radius:20px;
+            background:#ffffff;
+        }
+
+        .field{
+            width:100%;
+            margin-bottom:12px;
+            padding:13px 14px;
+            border-radius:14px;
+            border:1px solid #d9e2f1;
+            background:#f8fbff;
+            color:#1f2937;
+            font-size:15px;
+        }
+
+        .field:focus{
+            outline:none;
+            border-color:#55cffa;
+            box-shadow:0 0 0 4px rgba(31,216,246,.14);
+            background:#fff;
+        }
+
+        .submitBtn{
+            width:100%;
+            padding:14px 16px;
+            border:none;
+            border-radius:14px;
+            font-size:15px;
+            font-weight:900;
+            color:#08111d;
+            background:linear-gradient(90deg,var(--cyan) 0%, #1ac8ef 100%);
+            cursor:pointer;
+            transition:transform .18s ease, box-shadow .18s ease;
+            box-shadow:0 14px 34px rgba(21,189,240,.24);
+        }
+
+        .submitBtn:hover{
+            transform:translateY(-1px);
+        }
+
+        .submitBtn:disabled{
+            opacity:.72;
+            cursor:not-allowed;
+            transform:none;
+        }
+
+        .bottomBar{
+            margin-top:24px;
+            padding:18px 20px;
+            border-radius:22px;
+            border:1px solid var(--line);
+            background:rgba(17,22,43,.82);
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:14px;
+            flex-wrap:wrap;
+        }
+
+        .bottomBarText{
+            color:var(--muted);
+            font-size:14px;
+            line-height:1.7;
+        }
+
+        .linkRow{
+            display:flex;
+            gap:12px;
+            flex-wrap:wrap;
+        }
+
+        .navLink{
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            padding:11px 16px;
+            border-radius:14px;
+            text-decoration:none;
+            color:#f8fcff;
+            font-size:14px;
+            font-weight:800;
+            border:1px solid rgba(86,101,144,.24);
+            background:rgba(10,14,28,.7);
+        }
+
+        .navLink:hover{
+            border-color:rgba(31,216,246,.22);
+        }
+
+        .auth-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .auth-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--line);
+        }
+        .auth-item.verified {
+            background: rgba(52, 211, 153, 0.1);
+            border-color: rgba(52, 211, 153, 0.2);
+        }
+        .auth-status-badge {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--faint);
+            color: #000;
+            font-size: 14px;
+            font-weight: 900;
+        }
+        .auth-item.verified .auth-status-badge {
+            background: var(--green);
+        }
+        .auth-label {
+            font-weight: 800;
+            color: var(--muted);
+        }
+        .auth-item.verified .auth-label {
+            color: #fff;
+        }
+        .auth-complete-banner {
+            margin-top: 16px;
+            padding: 10px;
+            border-radius: 10px;
+            background: rgba(34, 211, 238, 0.1);
+            border: 1px solid rgba(34, 211, 238, 0.2);
+            color: var(--cyan);
+            font-size: 13px;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        @keyframes wave{
+            0%,100%{transform:scaleY(.72);opacity:.68;}
+            50%{transform:scaleY(1.12);opacity:1;}
+        }
+
+        @media (max-width: 1020px){
+            .cardGrid{
+                grid-template-columns:1fr;
+            }
+        }
+
+        @media (max-width: 720px){
+            .shell{padding-top:16px;}
+            .hero{margin-top:42px;}
+            .brand{font-size:40px;}
+            .heroTitle{font-size:46px;}
+            .heroText{font-size:16px;}
+            .centerPanel{padding:20px;}
+        }
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <section class="hero">
+            <div class="micRing" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 15a4 4 0 0 0 4-4V7a4 4 0 1 0-8 0v4a4 4 0 0 0 4 4Z"></path>
+                    <path d="M19 11a7 7 0 0 1-14 0"></path>
+                    <path d="M12 18v3"></path>
+                    <path d="M8 21h8"></path>
+                </svg>
+            </div>
+            <h2 class="brand">Voice<span>Access</span></h2>
+            <div class="engine">Voice Engine Active</div>
+
+            <div class="voiceWave" aria-hidden="true">
+                <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+            </div>
+
+            <h1 class="heroTitle">
+                Your Voice is
+                <span class="accent">Your Interview Flow</span>
+            </h1>
+            <p class="heroText">
+                Secure, modern AI interview experience for domain, resume, and company-based screening with the same backend flow you already use.
+            </p>
+        </section>
+
+        <section class="centerPanel">
+            <button class="quickBtn primary" type="button" onclick="window.location.href='/voice-password/login';">
+                Login with Voice Password
+            </button>
+            <div class="quickDivider">or</div>
+            <button class="quickBtn secondary" type="button" onclick="window.location.href='/voice-password/register';">
+                Register Voice Profile
+            </button>
+            <div class="voiceStatus">
+                <div style="font-weight:900; margin-bottom:12px; color:#fff; text-transform:uppercase; letter-spacing:0.1em; font-size:12px;">Authentication Status</div>
+                
+                <div class="auth-list">
+                    <div class="auth-item {% if voice_authenticated %}verified{% endif %}">
+                        <div class="auth-status-badge">
+                            {% if voice_authenticated %}✓{% else %}1{% endif %}
+                        </div>
+                        <div style="flex:1">
+                            <div class="auth-label">Voice Password</div>
+                            {% if voice_authenticated %}
+                                <div style="font-size:12px; color:var(--muted)">Verified as {{ voice_username }} ({{ (voice_score * 100)|round|int }}% match)</div>
+                            {% elif voice_required %}
+                                <div style="font-size:12px; color:var(--red)">Required before interview</div>
+                            {% else %}
+                                <div style="font-size:12px; color:var(--faint)">Optional but recommended</div>
+                            {% endif %}
+                        </div>
+                        {% if voice_authenticated %}
+                            <form method="post" action="/voice-password/logout" style="margin:0">
+                                <button type="submit" style="background:none; border:none; color:var(--red); font-size:11px; font-weight:800; cursor:pointer; padding:4px;">LOGOUT</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if voice_authenticated %}
+                    <div class="auth-complete-banner">
+                        ✨ VERIFICATION COMPLETE. YOU MAY START THE INTERVIEW.
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+
+        <section class="cardGrid">
+            <div class="card" id="domainCard">
+                <div class="cardHead">
+                    <div class="iconBox">D</div>
+                    <h3>Domain Based</h3>
+                    <p>Select a technical domain and begin a guided 5-question voice interview.</p>
+                </div>
+
+                <form class="formWrap js-start-form" action="/start" method="POST">
+                    <input class="field" name="name" placeholder="Candidate name" value="{{ voice_username or '' }}" required>
+                    <input class="field" type="email" name="email" placeholder="Candidate email" value="{{ voice_email or '' }}" required>
+                    <select class="field" name="domain">
+                        {% for d in domains %}
+                            <option>{{ d }}</option>
+                        {% endfor %}
+                    </select>
+                    <button class="submitBtn" type="submit">Start Domain Interview</button>
+                </form>
+            </div>
+
+            <div class="card" id="resumeCard">
+                <div class="cardHead">
+                    <div class="iconBox">R</div>
+                    <h3>Resume Based</h3>
+                    <p>Upload a resume and generate interview questions directly from candidate skills and projects.</p>
+                </div>
+
+                <form class="formWrap js-start-form" action="/resume_interview" method="POST" enctype="multipart/form-data">
+                    <input class="field" name="name" placeholder="Candidate name" value="{{ voice_username or '' }}" required>
+                    <input class="field" type="email" name="email" placeholder="Candidate email" value="{{ voice_email or '' }}" required>
+                    <input class="field" type="file" name="resume" required>
+                    <button class="submitBtn" type="submit">Upload Resume and Start</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="cardHead">
+                    <div class="iconBox">C</div>
+                    <h3>Company Based</h3>
+                    <p>Run custom company questions with AI evaluation mode or keyword-based evaluation.</p>
+                </div>
+
+                <form class="formWrap js-start-form" action="/company_interview" method="POST" enctype="multipart/form-data">
+                    <input class="field" name="name" placeholder="Candidate name" value="{{ voice_username or '' }}" required>
+                    <input class="field" type="email" name="email" placeholder="Candidate email" value="{{ voice_email or '' }}" required>
+                    <select class="field" name="evaluation_mode" required>
+                        <option value="ai">AI Evaluation Mode</option>
+                        <option value="keyword">Keyword Based Evaluation</option>
+                    </select>
+                    <input class="field" type="file" name="company_file" accept=".pdf,.txt,.csv,.xlsx,.xls" required>
+                    <button class="submitBtn" type="submit">Upload Company File and Start</button>
+                </form>
+            </div>
+        </section>
+
+        <section class="bottomBar">
+            <div class="bottomBarText">Interview flow is candidate-only. Results are available only to admin.</div>
+            <div class="linkRow">
+                <a class="navLink" href="/voice-password">Voice Password</a>
+                <a class="navLink" href="{{ '/admin' if admin_logged_in else '/admin/login' }}">Admin Access</a>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Forms now submit directly to backend - environment checks happen on Interview Setup page
+        document.querySelectorAll(".js-start-form").forEach(function(form){
+            form.addEventListener("submit", function(e){
+                const button = form.querySelector(".submitBtn");
+                if (button) {
+                    button.disabled = true;
+                }
+                // Form submits normally - interview.html will handle environment setup
+            });
+        });
+    </script>
+</body>
+</html>

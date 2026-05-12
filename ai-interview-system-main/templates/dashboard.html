@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard</title>
+
+<style>
+:root{
+--ink:#09111f;
+--navy:#0f172a;
+--blue:#2563eb;
+--teal:#0f766e;
+--red:#dc2626;
+--mist:#f8fbff;
+--line:#dbe3ef;
+--text:#1f2937;
+--muted:#64748b;
+}
+
+*{box-sizing:border-box;}
+
+body{
+margin:0;
+font-family:"Segoe UI",Tahoma,sans-serif;
+background:
+radial-gradient(circle at 12% 12%, rgba(20,184,166,.15), transparent 20%),
+radial-gradient(circle at 84% 10%, rgba(37,99,235,.18), transparent 18%),
+linear-gradient(145deg,#08101d 0%, #10213f 42%, #183f7a 100%);
+color:white;
+min-height:100vh;
+}
+
+.shell{
+max-width:1240px;
+margin:0 auto;
+padding:36px 18px 56px;
+}
+
+.topRow{
+display:flex;
+justify-content:space-between;
+align-items:flex-start;
+gap:16px;
+flex-wrap:wrap;
+padding:28px;
+border-radius:28px;
+background:rgba(255,255,255,.08);
+border:1px solid rgba(255,255,255,.14);
+backdrop-filter:blur(12px);
+box-shadow:0 24px 60px rgba(0,0,0,.28);
+}
+
+.title{
+margin:0;
+font-size:38px;
+font-weight:800;
+}
+
+.subtitle{
+margin:10px 0 0;
+max-width:700px;
+font-size:15px;
+line-height:1.8;
+color:#d8e6ff;
+}
+
+.actions{
+display:flex;
+gap:12px;
+flex-wrap:wrap;
+}
+
+.actions a{
+text-decoration:none;
+background:rgba(255,255,255,.12);
+border:1px solid rgba(255,255,255,.18);
+color:white;
+padding:11px 15px;
+border-radius:14px;
+font-size:14px;
+font-weight:700;
+}
+
+.stats{
+display:grid;
+grid-template-columns:repeat(3,minmax(0,1fr));
+gap:18px;
+margin-top:22px;
+}
+
+.statCard{
+padding:22px;
+border-radius:24px;
+background:#ffffff;
+color:var(--text);
+box-shadow:0 24px 60px rgba(0,0,0,.22);
+}
+
+.statCard h3{
+margin:0;
+font-size:13px;
+text-transform:uppercase;
+letter-spacing:.18em;
+color:var(--muted);
+}
+
+.statCard p{
+margin:12px 0 0;
+font-size:34px;
+font-weight:800;
+color:var(--ink);
+}
+
+.content{
+margin-top:22px;
+border-radius:28px;
+background:#ffffff;
+color:var(--text);
+padding:26px;
+box-shadow:0 24px 60px rgba(0,0,0,.22);
+overflow:auto;
+}
+
+.tableHeader{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:12px;
+flex-wrap:wrap;
+margin-bottom:18px;
+}
+
+.tableHeader h2{
+margin:0;
+font-size:26px;
+font-weight:800;
+}
+
+.tableHeader p{
+margin:6px 0 0;
+color:var(--muted);
+}
+
+table{
+width:100%;
+border-collapse:separate;
+border-spacing:0 10px;
+}
+
+th{
+font-size:12px;
+text-transform:uppercase;
+letter-spacing:.14em;
+color:var(--muted);
+padding:0 14px 6px;
+text-align:left;
+}
+
+td{
+background:var(--mist);
+padding:16px 14px;
+font-size:14px;
+vertical-align:middle;
+}
+
+tr td:first-child{
+border-top-left-radius:16px;
+border-bottom-left-radius:16px;
+}
+
+tr td:last-child{
+border-top-right-radius:16px;
+border-bottom-right-radius:16px;
+}
+
+.scoreBadge{
+display:inline-block;
+padding:8px 12px;
+border-radius:999px;
+font-weight:800;
+font-size:13px;
+background:#dbeafe;
+color:#1d4ed8;
+}
+
+.btn{
+padding:9px 12px;
+border-radius:10px;
+color:white;
+font-size:13px;
+font-weight:700;
+border:none;
+cursor:pointer;
+text-decoration:none;
+display:inline-block;
+}
+
+.btn-download{background:linear-gradient(135deg,#0f766e,#14b8a6);}
+.btn-delete{background:linear-gradient(135deg,#dc2626,#ef4444);}
+
+.empty{
+padding:26px;
+border-radius:20px;
+background:var(--mist);
+color:var(--muted);
+text-align:center;
+}
+
+@media (max-width: 900px){
+.stats{grid-template-columns:1fr;}
+table{min-width:760px;}
+.title{font-size:32px;}
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="shell">
+
+<div class="topRow">
+  <div>
+    <h1 class="title">Candidate Dashboard</h1>
+    <p class="subtitle">Review interview outcomes, manage candidate records, download polished reports, and track screening performance from one professional dashboard.</p>
+  </div>
+  <div class="actions">
+    <a href="/analytics">View Analytics</a>
+    <a href="/">Home</a>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="statCard">
+    <h3>Total Candidates</h3>
+    <p>{{ total_candidates }}</p>
+  </div>
+  <div class="statCard">
+    <h3>Average Score</h3>
+    <p>{{ avg_score }}%</p>
+  </div>
+  <div class="statCard">
+    <h3>Report Access</h3>
+    <p>PDF Ready</p>
+  </div>
+</div>
+
+<div class="content">
+  <div class="tableHeader">
+    <div>
+      <h2>Interview Records</h2>
+      <p>Each record includes the candidate outcome and downloadable report.</p>
+    </div>
+  </div>
+
+  {% if candidates|length == 0 %}
+    <div class="empty">No interview records found yet.</div>
+  {% else %}
+  <table>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Domain</th>
+      <th>Score</th>
+      <th>Date</th>
+      <th>Report</th>
+      <th>Delete</th>
+    </tr>
+
+    {% for c in candidates %}
+    <tr>
+      <td>{{ c.id }}</td>
+      <td>{{ c.name }}</td>
+      <td>{{ c.domain }}</td>
+      <td><span class="scoreBadge">{{ c.score }}%</span></td>
+      <td>{{ c.date }}</td>
+      <td><a class="btn btn-download" href="/download_report/{{ c.name }}/{{ c.score }}">Download PDF</a></td>
+      <td>
+        <form action="/delete_candidate/{{ c.id }}" method="POST" onsubmit="return confirm('Delete this user record?');" style="display:inline;">
+          <button class="btn btn-delete" type="submit">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% endif %}
+</div>
+
+</div>
+
+</body>
+</html>

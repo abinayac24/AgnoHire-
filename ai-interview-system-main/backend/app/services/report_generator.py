@@ -1,0 +1,1 @@
+from app.modules.report_generator import report_generator
